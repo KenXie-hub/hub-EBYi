@@ -34,7 +34,7 @@ def text_calssify_using_ml(text: str) -> str:
     test_feature = vector.transform([test_sentence])
     return model.predict(test_feature)[0]
 
-def text_calssify_using_llm(text: str) -> str:
+def text_calssify_using_llm_qwen_flash(text: str) -> str:
     """
     文本分类（大语言模型），输入文本完成类别划分
     """
@@ -62,8 +62,37 @@ Other
     )
     return completion.choices[0].message.content
 
+def text_calssify_using_llm_qwen_plus(text: str) -> str:
+    """
+    文本分类（大语言模型），输入文本完成类别划分
+    """
+    completion = client.chat.completions.create(
+        model="qwen-plus",  # 模型的代号
+
+        messages=[
+            {"role": "user", "content": f"""帮我进行文本分类：{text}
+
+输出的类别只能从如下中进行选择， 除了类别之外下列的类别，请给出最合适的类别。
+FilmTele-Play            
+Video-Play               
+Music-Play              
+Radio-Listen           
+Alarm-Update        
+Travel-Query        
+HomeAppliance-Control  
+Weather-Query          
+Calendar-Query      
+TVProgram-Play      
+Audio-Play       
+Other             
+"""},  # 用户的提问
+        ]
+    )
+    return completion.choices[0].message.content
+
 if __name__ == "__main__":
     # pandas 用来进行表格的加载和分析
     # numpy 从矩阵的角度进行加载和计算
     print("机器学习: ", text_calssify_using_ml("帮我导航到天安门"))
-    print("大语言模型: ", text_calssify_using_llm("帮我导航到天安门"))
+    print("大语言模型qwen_flash: ", text_calssify_using_llm_qwen_flash("帮我导航到天安门"))
+    print("大语言模型qwen-plus: ", text_calssify_using_llm_qwen_plus("帮我导航到天安门"))
